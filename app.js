@@ -4,19 +4,24 @@ var clientList = [];
 
 chatServer.on('connection', function(client) {
 	client.name = client.remoteAddress + ":" + client.remotePort;
-	client.write('Hi! ' + client.name + '\n');
 
 	clientList.push(client);
 
 	client.on('data', function(data) {
-		broadcast(data,client);
-	})
+		var message = client.name + " => " + data;
+		broadcast(message,client);
+	});
+
+	broadcast(client.name + ' has joined\n');
+	client.write('Hi! ' + client.name + '\n');
+
 });
 
 function broadcast(message, client) {
+	console.log(message);
 	for (var i=0;i<clientList.length;i++) {
 		if (client != clientList[i]) {
-			clientList[i].write(client.name + " says " + message);
+			clientList[i].write(message);
 		}
 	}
 }
